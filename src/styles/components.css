@@ -1,0 +1,1042 @@
+/* ==========================================================================
+   Pace — unified design tokens & component library
+   All popup views and the injected break mask share this single file.
+   Tokens are scoped to .pace-extension-root (never :root) so nothing leaks
+   into host pages. Naming: .pace-[Block]__[Element]--[Modifier].
+   ========================================================================== */
+
+/* Bundled UI typeface: Inter (variable, latin subset) for a consistent
+   cross-platform render in extension pages. Chrome ignores @font-face
+   inside shadow roots, so the injected mask intentionally falls back to
+   the system stack — its serif cue is the star there anyway. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+}
+
+.pace-extension-root {
+  /* Focus theme — "parchment on a desk".
+     The ink ramp: ink > ink-soft > ink-faint > ink-wash (hover tint). */
+  --pace-color-bg: #f7f5f0; /* Oatmeal */
+  --pace-color-surface: #fdfcf9; /* Soft Cream */
+  --pace-color-ink: #3a3632; /* Espresso */
+  --pace-color-ink-hover: #4a453f;
+  --pace-color-ink-soft: #6f6a64;
+  --pace-color-ink-faint: #99938c;
+  --pace-color-ink-wash: rgba(58, 54, 50, 0.08);
+  --pace-color-accent: #8a9a86; /* Sage Green — progress, break badge */
+  --pace-color-taupe: #a8998a; /* Muted Taupe — paused badge */
+  --pace-color-border: #e4dfd6;
+  --pace-color-track: #e0dbd2;
+
+  /* Break theme — "a dimmed, quiet room".
+     The cream ramp: cream > dim > faint > ghost > track > wash. */
+  --pace-color-dark: #1c1918; /* Warm Obsidian (opaque) */
+  --pace-color-cream: #fdfcf9;
+  --pace-color-cream-dim: rgba(253, 252, 249, 0.55);
+  --pace-color-cream-faint: rgba(253, 252, 249, 0.35);
+  --pace-color-cream-ghost: rgba(253, 252, 249, 0.25);
+  --pace-color-cream-track: rgba(253, 252, 249, 0.15);
+  --pace-color-cream-wash: rgba(253, 252, 249, 0.08);
+  --pace-mask-bg: rgba(28, 25, 24, 0.85);
+
+  /* Elevation */
+  --pace-shadow-knob: 0 1px 2px rgba(0, 0, 0, 0.15);
+
+  /* Spacing */
+  --pace-spacing-xs: 4px;
+  --pace-spacing-sm: 8px;
+  --pace-spacing-md: 16px;
+  --pace-spacing-lg: 24px;
+
+  /* Radii: one corner radius plus the pill — nothing else. */
+  --pace-radius-md: 10px;
+  --pace-radius-pill: 999px;
+
+  /* Typography — the only type scale in the product */
+  --pace-font-ui:
+    'Inter', -apple-system, BlinkMacSystemFont, 'San Francisco', 'Segoe UI',
+    sans-serif;
+  --pace-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --pace-font-size-xs: 11px; /* section titles, scale marks, caps meta */
+  --pace-font-size-sm: 13px; /* setting labels, estimates, captions */
+  --pace-font-size-base: 14px; /* body text and controls */
+  --pace-font-size-lg: 15px; /* buttons, primary labels */
+  --pace-font-size-title: 18px; /* page titles */
+  --pace-font-size-xl: 20px; /* waiting status, prominent labels */
+  --pace-font-size-display: 40px; /* planning hero number */
+  --pace-font-size-display-lg: 48px; /* working countdown */
+  --pace-font-size-hero: 64px; /* mask serif cue */
+
+  font-family: var(--pace-font-ui);
+  font-size: var(--pace-font-size-base);
+  color: var(--pace-color-ink);
+}
+
+/* The [hidden] attribute must always win, even over components that set
+   their own display value (e.g. .pace-switch, .pace-icon-button). */
+.pace-extension-root [hidden],
+.pace-extension-root[hidden] {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Popup shell
+   ========================================================================== */
+
+.pace-popup {
+  width: 320px;
+  margin: 0;
+  background: var(--pace-color-bg);
+}
+
+/* Cap the popup at a stable height. Chrome sizes the popup to the body's
+   scrollHeight (ignoring a max-height on the body itself), so the cap
+   lives on an inner wrapper whose own box height the body then adopts —
+   the tall settings view scrolls inside it. */
+.pace-popup__scroll {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+/* Every view enters with a small "inhale" — re-triggered automatically
+   whenever the hidden attribute flips display back on. */
+.pace-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  animation: pace-view-in 0.25s ease-out;
+}
+
+@keyframes pace-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.pace-view[hidden] {
+  display: none;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.pace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 28px;
+}
+
+/* The wordmark speaks in the brand's serif voice. */
+.pace-header__title {
+  margin: 0;
+  font-family: var(--pace-font-serif);
+  font-size: var(--pace-font-size-title);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* Secondary metadata (session progress, estimates): a quiet caps
+   whisper echoing the mask's meta line — present, never loud. */
+.pace-meta {
+  margin: 0;
+  font-size: var(--pace-font-size-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--pace-color-ink-faint);
+}
+
+/* Waiting meta: caps text with a trailing forward arrow ("next session"). */
+.pace-meta--next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pace-meta__arrow {
+  flex: none;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.pace-button {
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--pace-radius-md);
+  background: var(--pace-color-ink);
+  color: var(--pace-color-cream);
+  font-family: var(--pace-font-ui);
+  font-size: var(--pace-font-size-lg);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.08s ease;
+}
+
+.pace-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.pace-button:hover {
+  background: var(--pace-color-ink-hover);
+}
+
+.pace-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pace-button:disabled:hover {
+  background: var(--pace-color-ink);
+}
+
+.pace-button--ghost {
+  background: transparent;
+  border-color: var(--pace-color-ink);
+  color: var(--pace-color-ink);
+}
+
+.pace-button--ghost:hover {
+  background: var(--pace-color-ink-wash);
+}
+
+.pace-button--block {
+  width: 100%;
+}
+
+.pace-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: var(--pace-radius-pill);
+  background: transparent;
+  color: var(--pace-color-ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pace-icon-button:active {
+  transform: scale(0.92);
+}
+
+/* A touch of play on the settings entrance. */
+.pace-icon-button--spin svg {
+  transition: transform 0.4s ease;
+}
+
+.pace-icon-button--spin:hover svg {
+  transform: rotate(30deg);
+}
+
+.pace-icon-button:hover {
+  background: var(--pace-color-ink-wash);
+}
+
+/* ==========================================================================
+   Selectable chips (session counts, long-break interval)
+   ========================================================================== */
+
+.pace-chips {
+  display: flex;
+  gap: var(--pace-spacing-sm);
+}
+
+.pace-chip {
+  flex: 1;
+  padding: 10px 0;
+  border: 1px solid var(--pace-color-border);
+  border-radius: var(--pace-radius-md);
+  background: var(--pace-color-surface);
+  color: var(--pace-color-ink-soft);
+  font-family: var(--pace-font-ui);
+  font-size: var(--pace-font-size-base);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.pace-chip:hover {
+  border-color: var(--pace-color-ink-faint);
+}
+
+.pace-chip--selected,
+.pace-chip--selected:hover {
+  background: var(--pace-color-ink);
+  border-color: var(--pace-color-ink);
+  color: var(--pace-color-cream);
+}
+
+.pace-chips--disabled .pace-chip {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Toggle switch
+   ========================================================================== */
+
+.pace-switch {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+  flex: none;
+}
+
+.pace-switch__input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.pace-switch__track {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--pace-radius-pill);
+  background: var(--pace-color-track);
+  pointer-events: none;
+}
+
+.pace-switch__track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pace-color-surface);
+  box-shadow: var(--pace-shadow-knob);
+  transition: transform 0.15s ease;
+}
+
+.pace-switch__input:checked + .pace-switch__track {
+  background: var(--pace-color-ink);
+}
+
+.pace-switch__input:checked + .pace-switch__track::after {
+  transform: translateX(14px);
+}
+
+/* ==========================================================================
+   Rows, labels, sections
+   ========================================================================== */
+
+.pace-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pace-spacing-md);
+}
+
+.pace-row--airy {
+  margin: var(--pace-spacing-xs) 0;
+}
+
+/* Quiet ambient-sound row: a faint speaker glyph marks the domain,
+   the track name stays secondary. */
+.pace-ambient {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--pace-font-size-sm);
+  color: var(--pace-color-ink-faint);
+}
+
+.pace-ambient__icon {
+  color: var(--pace-color-ink-faint);
+  flex: none;
+  /* Optical alignment: sit the glyph on the text's visual midline. */
+  position: relative;
+  top: 1px;
+}
+
+/* The headphones glyph is bottom-heavy (ear cups hang low), so on the row
+   midline it reads a touch low. Lift just the ambient-row icons — the bell in
+   the reminder rows is balanced and keeps the shared +1px. */
+#ambient-row .pace-ambient__icon,
+#working-sound-row .pace-ambient__icon {
+  top: -1px;
+}
+
+.pace-label {
+  margin: 0;
+  font-size: var(--pace-font-size-lg);
+}
+
+/* The planning invitation: serif voice, centered on the page axis. */
+.pace-prompt {
+  margin: var(--pace-spacing-sm) 0 0;
+  font-family: var(--pace-font-serif);
+  font-size: var(--pace-font-size-title);
+  font-weight: 500;
+  text-align: center;
+}
+
+.pace-text-faint {
+  color: var(--pace-color-ink-faint);
+}
+
+/* About row: version on the left, a quiet source link on the right. The link
+   stays muted until hover so it never competes with the settings controls. */
+.pace-about {
+  margin-top: var(--pace-spacing-sm);
+  font-size: var(--pace-font-size-sm);
+}
+
+.pace-about__link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--pace-color-ink-faint);
+  text-decoration: none;
+}
+
+.pace-about__link:hover {
+  color: var(--pace-color-ink);
+}
+
+/* Group rhythm: generous air above a section title and clear separation
+   below it, so each settings group reads as one unit. */
+.pace-section-title {
+  margin: var(--pace-spacing-md) 0 0;
+  font-size: var(--pace-font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pace-color-ink-faint);
+}
+
+/* Labels of individual settings: quiet descriptors, one step below the
+   controls they describe. */
+.pace-setting-label {
+  font-size: var(--pace-font-size-sm);
+  color: var(--pace-color-ink-soft);
+}
+
+/* Hero numerals: light weight keeps the big digits airy, not heavy. */
+.pace-count {
+  margin: 0;
+  text-align: center;
+  font-size: var(--pace-font-size-display);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Each slider detent makes the number "settle" into place. */
+.pace-count--settle {
+  animation: pace-settle 0.18s ease-out;
+}
+
+@keyframes pace-settle {
+  from {
+    opacity: 0.4;
+    transform: scale(1.06);
+  }
+}
+
+/* Unit beneath the hero number: tells a newcomer what the count counts. Pulled
+   up tight so it reads as the numeral's unit, not a floating line of its own. */
+.pace-unit {
+  margin: -8px 0 0;
+  text-align: center;
+  font-size: var(--pace-font-size-xs);
+  letter-spacing: 0.06em;
+  color: var(--pace-color-ink-faint);
+}
+
+.pace-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -10px;
+  font-size: var(--pace-font-size-xs);
+  color: var(--pace-color-ink-faint);
+}
+
+/* "sessions" doubles as a one-time teacher: a dotted-underline hint that reveals
+   the focus/break cadence on hover (reusing .pace-info__bubble), so the durations
+   educate once on demand instead of living permanently on the home screen. */
+.pace-hint {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+/* Underline only on hover/focus: at rest "sessions" stays a calm, centered
+   label (no permanent dotted line nagging from the visual midline); the cue
+   appears the moment a curious user reaches for it. */
+.pace-hint:hover,
+.pace-hint:focus-visible {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--pace-color-border);
+  text-underline-offset: 3px;
+}
+
+.pace-hint:hover .pace-info__bubble,
+.pace-hint:focus .pace-info__bubble,
+.pace-hint:focus-visible .pace-info__bubble {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Layout-only companion to .pace-meta for the centered estimate line. */
+.pace-estimate {
+  text-align: center;
+}
+
+/* The estimate sits below the toggles (planning + focus views) — give it room
+   to breathe so it doesn't crowd the reminder row above it. */
+.pace-estimate--airy {
+  margin-top: var(--pace-spacing-sm);
+}
+
+.pace-footer {
+  display: flex;
+  gap: var(--pace-spacing-sm);
+  margin-top: var(--pace-spacing-sm);
+}
+
+.pace-footer--spaced {
+  margin-top: var(--pace-spacing-md);
+}
+
+.pace-footer .pace-button {
+  flex: 1;
+}
+
+.pace-footer .pace-button--primary-wide {
+  flex: 2;
+}
+
+/* ==========================================================================
+   Timer & progress
+   ========================================================================== */
+
+.pace-timer {
+  margin: var(--pace-spacing-sm) 0 0;
+  font-size: var(--pace-font-size-display-lg);
+  font-weight: 300;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* While paused the countdown holds its breath with you — and quietly
+   answers "is the timer still alive?". */
+.pace-timer--paused {
+  animation: pace-breathe-dim 4s ease-in-out infinite;
+}
+
+@keyframes pace-breathe-dim {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.pace-progress {
+  height: 4px;
+  border-radius: var(--pace-radius-pill);
+  background: var(--pace-color-track);
+  overflow: hidden;
+}
+
+.pace-progress__fill {
+  height: 100%;
+  border-radius: var(--pace-radius-pill);
+  background: var(--pace-color-accent);
+  transition: width 0.5s linear;
+}
+
+.pace-progress--dark {
+  background: var(--pace-color-cream-track);
+}
+
+.pace-progress--dark .pace-progress__fill {
+  background: var(--pace-color-cream-dim);
+}
+
+/* ==========================================================================
+   Sliders (settings)
+   ========================================================================== */
+
+.pace-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  margin: 6px 0 2px;
+  border-radius: var(--pace-radius-pill);
+  background: var(--pace-color-track);
+  outline: none;
+}
+
+.pace-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--pace-color-ink);
+  cursor: pointer;
+}
+
+.pace-slider:disabled::-webkit-slider-thumb {
+  background: var(--pace-color-ink-faint);
+}
+
+.pace-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pace-spacing-xs);
+}
+
+.pace-field__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--pace-font-size-sm);
+  color: var(--pace-color-ink-soft);
+}
+
+/* Chip rows nested in a settings field (long-break interval) need a
+   little air below their label. */
+.pace-field .pace-chips {
+  margin-top: 6px;
+}
+
+.pace-field__value {
+  font-variant-numeric: tabular-nums;
+  color: var(--pace-color-ink-faint);
+}
+
+.pace-group--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Selectable tiles (ambient sound)
+   ========================================================================== */
+
+.pace-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pace-spacing-sm);
+}
+
+.pace-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border: 1px solid var(--pace-color-border);
+  border-radius: var(--pace-radius-md);
+  background: var(--pace-color-surface);
+  color: var(--pace-color-ink);
+  font-family: var(--pace-font-ui);
+  font-size: var(--pace-font-size-base);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.pace-tile:hover {
+  border-color: var(--pace-color-ink-faint);
+}
+
+.pace-tile--selected,
+.pace-tile--selected:hover {
+  border-color: var(--pace-color-ink);
+  box-shadow: inset 0 0 0 1px var(--pace-color-ink);
+}
+
+.pace-tile__check {
+  visibility: hidden;
+}
+
+.pace-tile--selected .pace-tile__check {
+  visibility: visible;
+}
+
+/* Navigation tile (opens another page): the label may wrap, but the trailing
+   "Set up ›" affordance stays intact on one line at the right. */
+.pace-tile--nav {
+  gap: var(--pace-spacing-sm);
+}
+
+.pace-tile__nav {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Waiting popup content
+   ========================================================================== */
+
+/* Break / waiting popups: an icon-led calm rest block, following the
+   design's structure (icon, cue, sub). */
+.pace-rest {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--pace-spacing-md);
+  padding: var(--pace-spacing-md) 0 var(--pace-spacing-xs);
+  text-align: center;
+}
+
+.pace-rest__icon {
+  color: var(--pace-color-ink-soft);
+}
+
+/* Sage — the brand's recovery colour — marks "break complete". */
+.pace-rest__icon--accent {
+  color: var(--pace-color-accent);
+}
+
+.pace-rest__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--pace-spacing-xs);
+}
+
+.pace-rest__sub {
+  margin: 0;
+  font-size: var(--pace-font-size-sm);
+  font-style: italic;
+  color: var(--pace-color-ink-faint);
+}
+
+/* Focal headline (waiting status / break cue / confirm question). */
+.pace-status {
+  margin: 0;
+  text-align: center;
+  font-size: var(--pace-font-size-xl);
+  font-weight: 600;
+}
+
+/* Centered muted sentence (confirm explanation). */
+.pace-note {
+  margin: 0;
+  text-align: center;
+  font-size: var(--pace-font-size-sm);
+  color: var(--pace-color-ink-faint);
+}
+
+/* End-confirmation: centered question + note, matching the rest dialogs. */
+.pace-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--pace-spacing-sm);
+  padding: var(--pace-spacing-md) 0;
+  text-align: center;
+}
+
+/* Break countdown: understated grey number below the cue, as in the
+   design — present for orientation, not a pressuring hero timer. */
+.pace-break-time {
+  margin: var(--pace-spacing-sm) 0;
+  text-align: center;
+  font-size: var(--pace-font-size-title);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--pace-color-ink-faint);
+}
+
+@keyframes pace-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Stillness for those who ask for it. */
+@media (prefers-reduced-motion: reduce) {
+  .pace-extension-root,
+  .pace-extension-root * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Info tooltip (planning-screen reminder disclosure)
+   ========================================================================== */
+
+.pace-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: var(--pace-color-ink-faint);
+  cursor: help;
+  /* Sit the glyph on the label's visual midline, like the speaker icon. */
+  top: 1px;
+}
+
+.pace-info__icon {
+  display: block;
+}
+
+/* Hover/focus bubble: dark chip floating above the icon. Resets the faint
+   caps context around it so the sentence reads normally. */
+.pace-info__bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 190px;
+  padding: 8px 10px;
+  border-radius: var(--pace-radius-md);
+  background: var(--pace-color-ink);
+  color: var(--pace-color-cream);
+  font-size: var(--pace-font-size-xs);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.pace-info:hover .pace-info__bubble,
+.pace-info:focus .pace-info__bubble,
+.pace-info:focus-visible .pace-info__bubble {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ==========================================================================
+   Cross-device reminder setup (QR pairing)
+   ========================================================================== */
+
+/* Numbered setup steps. */
+.pace-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pace-spacing-sm);
+}
+
+.pace-steps li {
+  display: flex;
+  gap: var(--pace-spacing-sm);
+  align-items: flex-start;
+  font-size: var(--pace-font-size-sm);
+  line-height: 1.45;
+  color: var(--pace-color-ink-soft);
+}
+
+.pace-steps__n {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--pace-color-ink);
+  color: var(--pace-color-cream);
+  font-size: var(--pace-font-size-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The QR sits on its own white card (the SVG already paints a quiet zone). */
+.pace-qr {
+  align-self: center;
+  width: 168px;
+  height: 168px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid var(--pace-color-border);
+  border-radius: var(--pace-radius-md);
+}
+
+.pace-qr svg {
+  display: block;
+}
+
+.pace-topic-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--pace-spacing-sm);
+}
+
+/* The topic is a secret string: monospace, wraps, easy to read/verify. */
+.pace-topic {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--pace-radius-md);
+  background: var(--pace-color-ink-wash);
+  color: var(--pace-color-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--pace-font-size-sm);
+  word-break: break-all;
+}
+
+.pace-topic__copy {
+  flex: none;
+  padding: 8px 14px;
+}
+
+.pace-topic__link {
+  font-size: var(--pace-font-size-sm);
+  text-align: center;
+  word-break: break-all;
+}
+
+/* ==========================================================================
+   In-page break mask (lives inside a Shadow Root)
+   ========================================================================== */
+
+.pace-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pace-spacing-lg);
+  background: var(--pace-mask-bg);
+  font-family: var(--pace-font-ui);
+  color: var(--pace-color-cream);
+  opacity: 0;
+  /* The "sunset fade": the room dims over 1.2s instead of slamming shut. */
+  transition: opacity 1.2s linear;
+}
+
+.pace-mask--visible {
+  opacity: 1;
+}
+
+.pace-mask__cue {
+  margin: 0;
+  font-family: var(--pace-font-serif);
+  font-size: var(--pace-font-size-hero);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-align: center;
+  transition: opacity 0.6s ease;
+}
+
+/* Session whisper, sitting under the progress bar (or the waiting sub). */
+.pace-mask__meta {
+  font-size: var(--pace-font-size-xs);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--pace-color-cream-faint);
+}
+
+/* Quiet brand signature, top-left corner, outside the content flow. */
+.pace-mask__logo {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  color: var(--pace-color-cream-faint);
+}
+
+/* Waiting-state mouse glyph: occupies the bottom action zone (the same
+   slot Hide uses during breaks). Text informs at the center; actions
+   live at the bottom edge. */
+.pace-mask__icon {
+  position: absolute;
+  bottom: 44px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  color: var(--pace-color-cream-dim);
+}
+
+/* Mostly still, with a brief nudge every cycle: "your move". */
+.pace-mask__icon svg {
+  animation: pace-wiggle 2.5s ease-in-out infinite;
+}
+
+@keyframes pace-wiggle {
+  0%,
+  70%,
+  100% {
+    transform: translateX(0);
+  }
+  76% {
+    transform: translateX(-5px);
+  }
+  82% {
+    transform: translateX(5px);
+  }
+  88% {
+    transform: translateX(-3px);
+  }
+  94% {
+    transform: translateX(0);
+  }
+}
+
+/* The waiting state is a sentence, not a shout: one size down. */
+.pace-mask--waiting .pace-mask__cue {
+  font-size: var(--pace-font-size-display);
+}
+
+.pace-mask__bar {
+  width: 340px;
+}
+
+/* Hide lives at the bottom edge, away from the resting center. It only
+   dismisses the mask — the break itself cannot be skipped. */
+.pace-mask__hide {
+  position: absolute;
+  bottom: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 40px;
+  border: 1px solid var(--pace-color-cream-faint);
+  border-radius: var(--pace-radius-pill);
+  background: transparent;
+  color: var(--pace-color-cream);
+  font-family: var(--pace-font-ui);
+  font-size: var(--pace-font-size-base);
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.pace-mask__hide:hover {
+  opacity: 1;
+}

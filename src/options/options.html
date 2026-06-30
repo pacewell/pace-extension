@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pace Options</title>
+    <link rel="stylesheet" href="../styles/components.css" />
+  </head>
+  <body class="pace-extension-root pace-popup">
+    <section class="pace-view">
+      <header class="pace-header">
+        <h1 class="pace-header__title">Pace</h1>
+        <span class="pace-meta">Developer options</span>
+      </header>
+      <div class="pace-row">
+        <span class="pace-setting-label"
+          >Test mode
+          <span class="pace-text-faint">(1 min &rarr; 1 s)</span></span
+        >
+        <span class="pace-switch">
+          <input
+            class="pace-switch__input"
+            type="checkbox"
+            id="testmode-toggle"
+          />
+          <span class="pace-switch__track"></span>
+        </span>
+      </div>
+      <p class="pace-label pace-text-faint" style="font-size: 13px">
+        Compresses every product minute to one second so a full
+        focus&nbsp;&rarr;&nbsp;break cycle can be tested in under a minute.
+        Saved immediately; applies from the next run.
+      </p>
+    </section>
+    <script type="module" src="./options.ts"></script>
+  </body>
+</html>

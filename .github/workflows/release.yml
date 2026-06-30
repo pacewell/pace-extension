@@ -1,0 +1,53 @@
+name: Release
+
+# Packages the Web Store artifact on a version tag and attaches it to the
+# matching GitHub Release. Push a tag like `v0.1.0` to trigger:
+#   npm version <x> --no-git-tag-version  (or bump manifest), commit, then
+#   git tag vX.Y.Z && git push origin vX.Y.Z
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # create/update the Release and upload assets
+
+jobs:
+  package:
+    name: build:store → zip → release asset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      # Guard: the tag must match the manifest version, so a release artifact is
+      # never published under a version it doesn't actually carry.
+      - name: Verify tag matches manifest version
+        run: |
+          MANIFEST_VERSION=$(node -p "require('./public/manifest.json').version")
+          TAG_VERSION=${GITHUB_REF_NAME#v}
+          if [ "$MANIFEST_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match manifest version $MANIFEST_VERSION"
+            exit 1
+          fi
+
+      # Store build: test mode dead-code-eliminated, Options page + options_ui
+      # stripped (tools/strip-dev-manifest.mjs). manifest.json lands at dist root.
+      - run: npm run build:store
+
+      - name: Package store zip
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          (cd dist && zip -rq "../pace-$VERSION.zip" . -x '*.DS_Store')
+          unzip -l "pace-$VERSION.zip" | grep -E 'manifest.json|background.js'
+
+      - name: Attach zip to the Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: pace-*.zip
+          fail_on_unmatched_files: true
+          generate_release_notes: true

@@ -1,0 +1,30 @@
+{
+  "name": "pace-extension",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Pace — minimalist pace-setting Chrome extension with enforced recovery.",
+  "scripts": {
+    "build": "tsc --noEmit && vite build && vite build -c vite.content.config.ts",
+    "build:store": "tsc --noEmit && vite build --mode store && vite build -c vite.content.config.ts --mode store && node tools/strip-dev-manifest.mjs",
+    "watch": "vite build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "npm run build && playwright test",
+    "e2e:headed": "npm run build && playwright test --headed",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{ts,css,html}\" \"*.{ts,js,json}\""
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@playwright/test": "^1.61.0",
+    "@types/chrome": "^0.0.287",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0",
+    "vite": "^6.0.0",
+    "vitest": "^4.1.9"
+  }
+}

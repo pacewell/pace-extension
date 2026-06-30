@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pace</title>
+    <link rel="stylesheet" href="../styles/components.css" />
+  </head>
+  <body class="pace-extension-root pace-popup">
+    <div class="pace-popup__scroll">
+    <!-- 1. Planning -->
+    <section class="pace-view" id="view-plan" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Pace</h1>
+        <button
+          class="pace-icon-button pace-icon-button--spin"
+          id="btn-settings"
+          title="Settings"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
+        </button>
+      </header>
+      <p class="pace-prompt">How far today?</p>
+      <p class="pace-count" id="plan-count">4</p>
+      <p class="pace-unit">
+        <span class="pace-hint" tabindex="0"
+          ><span id="plan-unit">sessions</span
+          ><span class="pace-info__bubble" id="plan-rhythm" role="tooltip"
+            >Each session is 25 min of focus, then a 5 min break.</span
+          ></span
+        >
+      </p>
+      <input
+        class="pace-slider"
+        type="range"
+        id="session-slider"
+        min="1"
+        max="10"
+        step="1"
+      />
+      <div class="pace-scale"><span>1</span><span>10</span></div>
+      <div class="pace-row pace-row--airy" id="ambient-row">
+        <span class="pace-ambient">
+          <svg
+            class="pace-ambient__icon"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"
+            />
+          </svg>
+          <span id="ambient-label">Rain</span>
+        </span>
+        <span class="pace-switch" id="ambient-switch">
+          <input
+            class="pace-switch__input"
+            type="checkbox"
+            id="ambient-toggle"
+          />
+          <span class="pace-switch__track"></span>
+        </span>
+      </div>
+      <div class="pace-row pace-row--airy" id="reminder-row">
+        <span class="pace-ambient">
+          <svg
+            class="pace-ambient__icon"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="6" y="3" width="12" height="18" rx="2.5" />
+            <line x1="12" y1="17.5" x2="12.01" y2="17.5" />
+          </svg>
+          <span>Buzz my phone</span>
+          <span class="pace-info" id="reminder-info" tabindex="0">
+            <svg
+              class="pace-info__icon"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <span class="pace-info__bubble" role="tooltip">
+              Only buzzes while this browser is open.
+            </span>
+          </span>
+        </span>
+        <span class="pace-switch">
+          <input
+            class="pace-switch__input"
+            type="checkbox"
+            id="reminder-toggle"
+          />
+          <span class="pace-switch__track"></span>
+        </span>
+      </div>
+      <p class="pace-meta pace-estimate pace-estimate--airy" id="plan-estimate">
+        Estimated finish: --:--
+      </p>
+      <button class="pace-button pace-button--block" id="btn-start">
+        Start
+      </button>
+    </section>
+
+    <!-- 2. Focus execution -->
+    <section class="pace-view" id="view-working" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Pace</h1>
+        <span class="pace-meta" id="working-progress">Session 1 of 4</span>
+      </header>
+      <p class="pace-timer" id="working-timer">25:00</p>
+      <div class="pace-progress">
+        <div class="pace-progress__fill" id="working-fill"></div>
+      </div>
+      <div class="pace-row" id="working-sound-row">
+        <span class="pace-ambient">
+          <svg
+            class="pace-ambient__icon"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"
+            />
+          </svg>
+          <span id="working-sound">Rain</span>
+        </span>
+        <span class="pace-switch">
+          <input class="pace-switch__input" type="checkbox" id="mute-toggle" />
+          <span class="pace-switch__track"></span>
+        </span>
+      </div>
+      <div class="pace-row" id="working-reminder-row">
+        <span class="pace-ambient">
+          <svg
+            class="pace-ambient__icon"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="6" y="3" width="12" height="18" rx="2.5" />
+            <line x1="12" y1="17.5" x2="12.01" y2="17.5" />
+          </svg>
+          <span>Buzz my phone</span>
+          <span class="pace-info" id="working-reminder-info" tabindex="0">
+            <svg
+              class="pace-info__icon"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <span class="pace-info__bubble" role="tooltip">
+              Only buzzes while this browser is open.
+            </span>
+          </span>
+        </span>
+        <span class="pace-switch">
+          <input
+            class="pace-switch__input"
+            type="checkbox"
+            id="working-reminder-toggle"
+          />
+          <span class="pace-switch__track"></span>
+        </span>
+      </div>
+      <p class="pace-meta pace-estimate pace-estimate--airy" id="working-estimate">
+        Estimated finish: --:--
+      </p>
+      <footer class="pace-footer">
+        <button class="pace-button pace-button--primary-wide" id="btn-pause">
+          Pause
+        </button>
+        <button class="pace-button pace-button--ghost" id="btn-end">End</button>
+      </footer>
+    </section>
+
+    <!-- 2.1 End confirmation -->
+    <section class="pace-view" id="view-confirm" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Pace</h1>
+      </header>
+      <div class="pace-confirm">
+        <p class="pace-status">End this run early?</p>
+        <p class="pace-note">Your current focus progress will be reset.</p>
+      </div>
+      <footer class="pace-footer">
+        <button class="pace-button pace-button--ghost" id="btn-confirm-cancel">
+          Cancel
+        </button>
+        <button class="pace-button" id="btn-confirm-end">End Run</button>
+      </footer>
+    </section>
+
+    <!-- 3. Break in progress -->
+    <section class="pace-view" id="view-breaking" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Pace</h1>
+        <span class="pace-meta" id="breaking-progress">Session 1 of 4</span>
+      </header>
+      <div class="pace-rest">
+        <span class="pace-rest__icon">
+          <svg width="54" height="48" viewBox="0 0 54 48" fill="currentColor">
+            <path
+              d="M10.575 48C9.275 48 8.2 47.575 7.35 46.725C6.5 45.875 6.075 44.8 6.075 43.5C6.075 42.6 6.3 41.7375 6.75 40.9125C7.2 40.0875 7.85 39.5 8.7 39.15L21.6 34.05V23.7C18.3 27.75 14.95 30.8 11.55 32.85C8.15 34.9 4.3 35.925 0 35.925V31.425C3.4 31.425 6.5 30.6375 9.3 29.0625C12.1 27.4875 14.625 25.275 16.875 22.425L21.225 17.55C21.725 16.95 22.3125 16.45 22.9875 16.05C23.6625 15.65 24.4 15.45 25.2 15.45H28.8C29.6 15.45 30.35 15.65 31.05 16.05C31.75 16.45 32.35 16.95 32.85 17.55L37.2 22.425C39.6 25.175 42.15 27.3625 44.85 28.9875C47.55 30.6125 50.6 31.425 54 31.425V35.925C49.75 35.925 45.9125 34.9 42.4875 32.85C39.0625 30.8 35.7 27.75 32.4 23.7V34.05L45.3 39.15C46.15 39.5 46.8 40.0875 47.25 40.9125C47.7 41.7375 47.925 42.6 47.925 43.5C47.925 44.8 47.5 45.875 46.65 46.725C45.8 47.575 44.725 48 43.425 48H20.7V47.175C20.7 45.875 21.1 44.825 21.9 44.025C22.7 43.225 23.75 42.825 25.05 42.825H35.025C35.425 42.825 35.775 42.675 36.075 42.375C36.375 42.075 36.525 41.725 36.525 41.325C36.525 40.925 36.375 40.575 36.075 40.275C35.775 39.975 35.425 39.825 35.025 39.825H25.05C22.85 39.825 21.1 40.5 19.8 41.85C18.5 43.2 17.85 44.975 17.85 47.175V48H10.575ZM23.1375 9.3375C22.0625 8.2625 21.525 6.975 21.525 5.475C21.525 3.975 22.0625 2.6875 23.1375 1.6125C24.2125 0.5375 25.5 0 27 0C28.5 0 29.7875 0.5375 30.8625 1.6125C31.9375 2.6875 32.475 3.975 32.475 5.475C32.475 6.975 31.9375 8.2625 30.8625 9.3375C29.7875 10.4125 28.5 10.95 27 10.95C25.5 10.95 24.2125 10.4125 23.1375 9.3375Z"
+            />
+          </svg>
+        </span>
+        <div class="pace-rest__text">
+          <p class="pace-status" id="breaking-cue">Pause and reset.</p>
+          <p class="pace-rest__sub" id="breaking-cue-sub">
+            Close your eyes and release the tension.
+          </p>
+        </div>
+      </div>
+      <p class="pace-break-time" id="breaking-timer">05:00</p>
+      <div class="pace-progress">
+        <div class="pace-progress__fill" id="breaking-fill"></div>
+      </div>
+      <button class="pace-button pace-button--block" id="btn-break-pause">
+        Pause
+      </button>
+    </section>
+
+    <!-- 4. Break ended, waiting for wake -->
+    <section class="pace-view" id="view-waiting" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Pace</h1>
+        <span class="pace-meta pace-meta--next">
+          <span id="waiting-progress">Session 2 of 4</span>
+          <svg
+            class="pace-meta__arrow"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <polyline points="14 6 20 12 14 18" />
+          </svg>
+        </span>
+      </header>
+      <div class="pace-rest">
+        <span class="pace-rest__icon pace-rest__icon--accent">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+            />
+          </svg>
+        </span>
+        <p class="pace-status">Break complete</p>
+      </div>
+      <p class="pace-meta pace-estimate">Ready for your next session</p>
+      <button class="pace-button pace-button--block" id="btn-resume-next">
+        Keep going
+      </button>
+    </section>
+
+    <!-- 4b. Run complete -->
+    <section class="pace-view" id="view-complete" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Pace</h1>
+      </header>
+      <div class="pace-rest">
+        <span class="pace-rest__icon pace-rest__icon--accent">
+          <svg
+            width="46"
+            height="46"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+            <line x1="4" y1="22" x2="4" y2="15" />
+          </svg>
+        </span>
+        <p class="pace-status">Nicely done.</p>
+      </div>
+      <p class="pace-meta pace-estimate" id="complete-summary">
+        4 sessions · 100 min of focus
+      </p>
+      <button class="pace-button pace-button--block" id="btn-complete-done">
+        Done
+      </button>
+    </section>
+
+    <!-- 5. Settings -->
+    <section class="pace-view" id="view-settings" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Settings</h1>
+      </header>
+
+      <p class="pace-section-title">Time Settings</p>
+      <div class="pace-field">
+        <div class="pace-field__head">
+          <span>Focus Duration</span>
+          <span class="pace-field__value" id="focus-value">25 min</span>
+        </div>
+        <input
+          class="pace-slider"
+          type="range"
+          id="focus-slider"
+          min="5"
+          max="120"
+          step="5"
+        />
+      </div>
+      <div class="pace-field">
+        <div class="pace-field__head">
+          <span>Break Duration</span>
+          <span class="pace-field__value" id="break-value">5 min</span>
+        </div>
+        <input
+          class="pace-slider"
+          type="range"
+          id="break-slider"
+          min="1"
+          max="30"
+          step="1"
+        />
+      </div>
+
+      <p class="pace-section-title">Long Break</p>
+      <div class="pace-row">
+        <span class="pace-setting-label">Enable Long Break</span>
+        <span class="pace-switch">
+          <input
+            class="pace-switch__input"
+            type="checkbox"
+            id="longbreak-toggle"
+          />
+          <span class="pace-switch__track"></span>
+        </span>
+      </div>
+      <div class="pace-field" id="longbreak-group">
+        <div class="pace-field__head"><span>Interval (sessions)</span></div>
+        <div class="pace-chips" id="interval-chips"></div>
+        <div class="pace-field__head" style="margin-top: 12px">
+          <span>Duration</span>
+          <span class="pace-field__value" id="longbreak-value">15 min</span>
+        </div>
+        <input
+          class="pace-slider"
+          type="range"
+          id="longbreak-slider"
+          min="1"
+          max="30"
+          step="1"
+        />
+      </div>
+
+      <p class="pace-section-title">Ambient Sound</p>
+      <div class="pace-tiles" id="sound-tiles"></div>
+
+      <p class="pace-section-title">Buzz my phone</p>
+      <button class="pace-tile pace-tile--nav" id="open-push-setup" type="button">
+        <span>Break reminders</span>
+        <span class="pace-text-faint pace-tile__nav">Set up ›</span>
+      </button>
+
+      <p class="pace-section-title">About</p>
+      <div class="pace-row pace-about">
+        <span class="pace-text-faint" id="about-version">Pace</span>
+        <a
+          class="pace-about__link"
+          href="https://github.com/pacewell/pace-extension"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Source on GitHub"
+          aria-label="Source on GitHub"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+            />
+          </svg>
+        </a>
+      </div>
+
+      <footer class="pace-footer pace-footer--spaced">
+        <button class="pace-button pace-button--ghost" id="btn-back">
+          Back
+        </button>
+        <button class="pace-button pace-button--primary-wide" id="btn-save">
+          Save Settings
+        </button>
+      </footer>
+    </section>
+
+    <!-- 6. Cross-device reminder setup -->
+    <section class="pace-view" id="view-push-setup" hidden>
+      <header class="pace-header">
+        <h1 class="pace-header__title">Reminders</h1>
+      </header>
+      <p class="pace-setting-label">
+        Break reminders on your phone and wrist — no account, no app from us.
+      </p>
+
+      <ol class="pace-steps">
+        <li>
+          <span class="pace-steps__n">1</span>
+          <span>Install the <b>ntfy</b> app (App Store / Google Play).</span>
+        </li>
+        <li>
+          <span class="pace-steps__n">2</span>
+          <span
+            >Scan the code with your phone camera, copy the text, then paste it
+            as the topic in ntfy and Subscribe.</span
+          >
+        </li>
+        <li>
+          <span class="pace-steps__n">3</span>
+          <span>Turn on ntfy notification forwarding in your watch app.</span>
+        </li>
+      </ol>
+
+      <div class="pace-qr" id="push-qr"></div>
+
+      <div class="pace-topic-row">
+        <code class="pace-topic" id="push-topic"></code>
+        <button class="pace-chip pace-topic__copy" id="push-copy" type="button">
+          Copy
+        </button>
+      </div>
+      <a
+        class="pace-text-faint pace-topic__link"
+        id="push-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      ></a>
+
+      <footer class="pace-footer pace-footer--spaced">
+        <button class="pace-button pace-button--ghost" id="push-back">
+          Back
+        </button>
+        <button
+          class="pace-button pace-button--primary-wide"
+          id="push-enable"
+        >
+          Enable reminders
+        </button>
+      </footer>
+    </section>
+    </div>
+
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>

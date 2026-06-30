@@ -1,0 +1,21 @@
+node_modules/
+dist/
+*.zip
+.DS_Store
+.claude/
+
+# Playwright e2e output (regenerable).
+test-results/
+playwright-report/
+.last-run.json
+
+# Store screenshot tool. Raw captures are kept (committed to the PRIVATE repo so
+# they survive — tools/store/ is excluded from the public release branch anyway).
+# Rendered output is regenerable from the raws via `npm run shots`, so it stays out.
+tools/store/out/
+tools/store/.work/
+
+# Audio working files — re-fetchable / regenerable (see asset/SOURCES.md).
+# Only the shipped public/audio/*.ogg is committed.
+asset/*/src.wav
+asset/*/cue-*.wav
